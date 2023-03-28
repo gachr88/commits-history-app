@@ -5,8 +5,10 @@ export default registerAs('config', () => {
     server: {
       port: process.env.PORT || 8000,
     },
-    tokens: {
-      githubApi: process.env.GITHUB_API_TOKEN,
+    github: {
+      token: process.env.GITHUB_API_TOKEN,
+      owner: process.env.GITHUB_OWNER_NAME,
+      repo: process.env.GITHUB_REPO_NAME,
     },
   };
 });
