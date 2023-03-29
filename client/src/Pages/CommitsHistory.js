@@ -1,4 +1,5 @@
-import {useState, useEfect} from 'react';
+import {useState, useEffect} from 'react';
+import moment from 'moment';
 import { getRepository } from '../services/gitHubApis';
 
 import Header from "../Components/Header";
@@ -11,14 +12,28 @@ import CommitBox from "../Components/CommitBox";
 const CommitsHistory = () => {
     const [repository, setRepository] = useState({});
     const [branches, setBranches] = useState([]);
+    const [isLoading, setLoading] = useState(false);
 
-    useEfect(() => {
-
+    useEffect(() => {
+        const fetchRepository = async() => {
+            setLoading(true);
+            const response = await getRepository();
+            const repo = {
+                name: response.name,
+                owner: response.owner.login, 
+                lastUpdate: moment(response.pushed_at).format('MM/DD/YYYY'),
+                url: response.html_url
+            }            
+            setLoading(false);
+            setRepository(repo);
+            
+        }
+        fetchRepository().catch(console.error);
     }, []);
 
     return (
         <div className="container-xl px-3 px-md-4 px-lg-5 mt-4">
-            <Header/>
+            <Header data={repository}/>
             <div className="p-2">
                 <Dropdown/>
                 <div className="my-5">
