@@ -25,12 +25,12 @@ npm install
 ```
 SERVER_PORT=8000
 #Token limited access
-GITHUB_API_TOKEN=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
+GITHUB_API_TOKEN=<token-send-by-email>
 GITHUB_OWNER_NAME=<owner-current-repository-name>
 GITHUB_REPO_NAME=<current-repository-name>
 ```
 
-Note: Make sure to replace `<owner-current-repository-name>` and `current-repository-name>` with the appropriate values.
+Note: Make sure to replace `<token-send-by-email>`, `<owner-current-repository-name>` and `current-repository-name>` with the appropriate values.
 
 **Client**
 
