@@ -1,14 +1,15 @@
 import UserTrack from "./UserTrack";
-const CommitBox = () => {
+const CommitBox = ({data}) => {    
     return (
-        <li className="border-solid border-black border-b-2 last-of-type:border-b-0  p-2 flex">
+        <li className="border-solid border-gray-200 border-b last-of-type:border-b-0  p-2 flex">
             <div className="flex-1">
-                <h4>Add Github service and dtos to server project</h4>             
-                <UserTrack/> 
+                <h4 className="whitespace-normal">{data.description}</h4>             
+                <UserTrack user={data.user} avatarUrl={data.userUrlImage} time={data.dateTime}/> 
             </div>
-            <span className="px-5 py-2 border-solid border-black border-2 rounded-md bg-gray-100 hover:bg-gray-200">
-               <p className="text-blue-600 cursor-pointer">785bc8979a</p> 
-            </span>                        
+            <a href={data.commitURL} target="_blank" rel="noreferrer"             
+                className="w-36 h-12 px-5 py-2 border-solid border-gray-200 border rounded-md bg-gray-100 hover:bg-gray-200 text-center">
+               <p className="text-blue-600 cursor-pointer text-md">{data.id.substring(0, 7)}</p> 
+            </a>                        
         </li>
     )
 }

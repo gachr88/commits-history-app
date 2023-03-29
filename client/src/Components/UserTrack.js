@@ -1,9 +1,11 @@
-const UserTrack = () => {
+import moment from "moment";
+
+const UserTrack = ({user, avatarUrl, dateTime}) => {
     return (
         <div className="flex">
-            <img className="h-4" src="https://avatars.githubusercontent.com/u/6540038?v=4" alt="user-logo"/>
-            <p className="font-bold text-xs">Gachr88</p>
-            <p className="text-xs indent-1">committed at 18:35</p>
+            <img className="h-4" src={avatarUrl} alt="user-logo"/>
+            <p className="font-bold text-xs">{user}</p>
+            <p className="text-xs indent-1">committed at {moment(dateTime).format('HH:mm')}</p>
         </div>
     );
 }
