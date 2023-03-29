@@ -18,6 +18,39 @@ export const getRepository = async () => {
     }
     catch(error) {
         console.error(error);
-    }
-    
+        return null;
+    }    
+}
+
+export const getBranches = async () => {
+  try {
+    const response = await api.get('/branches');     
+    return response.data;
+  }
+  catch(error) {
+      console.error(error);
+      return [];
+  }    
+}
+
+export const getCommitsByBranch = async (branchId) => {
+  try {
+    const response = await api.get('/commits', {branchId:branchId});     
+    return response.data;
+  }
+  catch(error) {
+      console.error(error);
+      return [];
+  }   
+}
+
+export const getCommitsByDescription = async (description) => {
+  try {
+    const response = await api.get('/commits', {q:`message:${description}`});     
+    return response.data;
+  }
+  catch(error) {
+      console.error(error);
+      return [];
+  }   
 }
