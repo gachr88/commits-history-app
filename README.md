@@ -12,7 +12,8 @@ To install the project, please follow these steps:
 
 2. Install the required packages for the client and the server
 
-```cd commits-history-app/client
+```
+cd commits-history-app/client
 npm install
 cd ../server
 npm install
