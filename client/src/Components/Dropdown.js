@@ -33,8 +33,6 @@ const Branches = ({ data, onChange }) => {
                         <DropdownItem key={item.id} data={item} clickEvent={(e) => dropdownItemClick(e, item.id, item.name)}/>                    
                     );
                 })}
-
-
             </ul>
         </div>
     );

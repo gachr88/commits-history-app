@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import moment from 'moment';
+import { useState, useEffect, useCallback } from 'react';
+import * as githubUtils from '../utils/githubUtil';
 import {
     getRepository,
     getBranches,
@@ -9,32 +9,18 @@ import {
 const useGithub = () => {
     const [repository, setRepository] = useState({});
     const [branches, setBranches] = useState([]);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [commits, setCommits] = useState({});
-    const [reloadCommits, setReloadCommits] = useState(false);
     const [selectedBranch, setSelectedBranch] = useState(null);
-    const [titleResult, setTitleResult] = useState('-');    
-
+    const [searchingForLabel, setSearchingForLabel] = useState('');
     useEffect(() => {
         const fetchRepository = async () => {
-            setLoading(true);
+            setIsLoading(true);
             const repositoryResponse = await getRepository();
             const branchesResponse = await getBranches();
-
-            const repo = {
-                name: repositoryResponse.name,
-                owner: repositoryResponse.owner.login,
-                lastUpdate: moment(repositoryResponse.pushed_at).format('MM/DD/YYYY'),
-                url: repositoryResponse.html_url
-            }
-
-            const branchList = branchesResponse.map((branch) => {
-                return {
-                    name: branch.name,
-                    id: branch.commit.sha
-                }
-            });
-            setLoading(false);
+            const repo = githubUtils.getFormattedRepo(repositoryResponse);
+            const branchList = branchesResponse.map(githubUtils.getFormattedBranch);
+            setIsLoading(false);
             setRepository(repo);
             setBranches(branchList);
 
@@ -42,52 +28,37 @@ const useGithub = () => {
         fetchRepository().catch(console.error);
     }, []);
 
-    useEffect(() => {
-        const fetchCommits = async () => {
-            const commitList = {};
-            const commitsResponse = await getCommitsByBranch(selectedBranch);
-            commitsResponse.forEach((item) => {
-                const { commit } = item;
-                const commitDate = moment(commit.author.date).format('YYYY-MM-DD');
-                commitList[commitDate] = commitList[commitDate] ?? [];
-                commitList[commitDate].push({
-                    id: item.sha,
-                    description: commit.message,
-                    user: commit.author.name,
-                    userUrlImage: item.author.avatar_url,
-                    dateTime: commit.author.date,
-                    commitURL: item.html_url,
-                });
-            });
-            setCommits(commitList);
+    const loadCommits = useCallback(async (branch) => {    
+        const commitsResponse = await getCommitsByBranch(branch);
+        const commitMap = githubUtils.getCommitMapByDate(commitsResponse)
+        setCommits(commitMap);
+    }, []);
 
+    useEffect(() => {
+        if (selectedBranch) {
+            loadCommits(selectedBranch).catch(console.error);
         }
-        if (!selectedBranch || reloadCommits) {
-            fetchCommits().catch(console.error);
-            setReloadCommits(false);
-        }
-    }, [selectedBranch, reloadCommits]);
+    }, [selectedBranch, loadCommits]);
 
     const branchChange = (currentBranch) => {
-        setSelectedBranch(currentBranch.id);        
+        setSelectedBranch(currentBranch.id);
         if (!currentBranch.id) {
-            setTitleResult('-');
+            setSearchingForLabel('');
         }
         else {
-            setTitleResult(` Branch:${currentBranch.name}`);
+            setSearchingForLabel(` Branch:${currentBranch.name}`);
         }
-
     }
 
-    const reloadClick = () => {
-        if(selectedBranch) {
-            setReloadCommits(true);        
-        }        
+    const reloadCommits = () => {
+        if (selectedBranch) {
+            loadCommits(selectedBranch);
+        }
     }
 
     const findCommits = (value) => {
         const datesFound = {}
-        setTitleResult(` Commits contains:${value}`);
+        setSearchingForLabel(` Commits contains:${value}`);
         Object.keys(commits).forEach((date) => {
 
             const commitsFound = commits[date].filter((commit) => {
@@ -101,15 +72,15 @@ const useGithub = () => {
         setCommits(datesFound);
     }
 
-    return {    
+    return {
         repository,
         branches,
         isLoading,
         commits,
         selectedBranch,
-        titleResult,
+        titleResult: searchingForLabel,
         branchChange,
-        reloadClick,
+        reloadCommits,
         findCommits
     }
 

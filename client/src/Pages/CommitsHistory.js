@@ -14,7 +14,7 @@ import useGithub from '../hooks/useGitHub';
 
 
 const CommitsHistory = () => {
-    const  {repository,
+    const { repository,
         branches,
         isLoading,
         commits,
@@ -22,37 +22,32 @@ const CommitsHistory = () => {
         titleResult,
         findCommits,
         branchChange,
-        reloadClick
-
+        reloadCommits
     } = useGithub();
-  
-
+    
     const notify = (message, notifyId) => {
         toast(message, { toastId: notifyId });
     }
 
     const searchClick = (value) => {
-        if (value !== "" && !selectedBranch) {
+        if (!value) return;
+        if (!selectedBranch) {
             notify("Please select a branch to search for results", "searchNotification");
         }
-
-        if (value !== "") {
-            findCommits(value);
-        }
+        findCommits(value);
     }
 
     return (
         <div className="container-xl px-3 px-md-4 px-lg-5 mt-4">
-             <ToastContainer limit={1} />
+            <ToastContainer limit={1} />
             {isLoading && <Loader />}
-            
-            <Header data={repository} />           
+            <Header data={repository} />
             <div className="p-2">
                 <Dropdown selected={branches[0]} data={branches} onChange={branchChange} />
                 <div className="my-5">
                     <InputSearch onSearch={searchClick} />
                 </div>
-                <TimeLine title={titleResult} onReload={reloadClick}>
+                <TimeLine title={titleResult} onReload={reloadCommits}>
                     {!selectedBranch && <EmptyMessage message='Please select a branch to show commits' />}
                     {selectedBranch && Object.keys(commits).map((commitDate) => {
                         return (
