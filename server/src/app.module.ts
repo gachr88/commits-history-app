@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 
-import { AppService } from './app.service';
 import { GithubModule } from './github/github.module';
 import config from './config';
 
@@ -21,6 +20,6 @@ import config from './config';
     GithubModule,
   ],
   controllers: [],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}
